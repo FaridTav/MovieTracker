@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Movie Tracker</title>
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr"
+            crossorigin="anonymous">
+        <link rel="stylesheet" href="/static/style.css">
+
+
+    </head>
+    <body>
+        <input id="movie-input-field" type="input" class="form-control"
+            placeholder="Enter Movie...">
+        <button class="btn btn-primary rounded-pill px-3" type="button"
+            onclick="enterMovie();">Enter</button>
+        <div id="movieList"
+            class="list-group list-group-flush border-bottom scrollarea">
+            
+        </body>
+        <script>
+    async function enterMovie() {
+        const movieInputField = document.getElementById("movie-input-field");
+        const movieContent = movieInputField.value.trim();
+        if (!movieContent) {
+            console.error("Movie input is empty");
+            return;
+        }
+
+        const contentToSend = {
+            "movie_content": movieContent
+        };
+            const response = await fetch('/movie', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(contentToSend)
+            });
+            movieInputField.value = '';
+            await updateMovieList();
+    }
+    window.addEventListener("DOMContentLoaded", function(event) {
+        const movieInputField = document.getElementById("movie-input-field");
+        movieInputField.addEventListener("keydown", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                enterMovie();
+            }
+        });
+    });
+
+    async function updateMovieList() {
+        
+            const response = await fetch('/movies', {
+                method: 'GET'
+            });
+            const movies = await response.json();
+            const movieList = document.getElementById("movieList");
+            movieList.innerHTML = '';
+
+            movies.forEach((movie, index) => {
+                movieList.innerHTML += `
+                    <div class='list-group-item list-group-item-action py-3 lh-sm'>
+                        <div class='d-flex w-100 align-items-center justify-content-between'>
+                            <strong class='mb-1'>${movie}</strong>
+                            <button class='btn btn-danger btn-sm' onclick='deleteMovie(${index})'>Delete</button>
+                        </div>
+                    </div>`;
+            });
+    }
+
+    async function deleteMovie(id) {
+        console.log(`Deleting movie ID: ${id}`);
+        const response = await fetch(`/movies/${id}`, {
+            method: 'DELETE'
+        });
+        if (response.status === 204) {
+            await updateMovieList();
+        } else {
+            console.error(`Didnt work: ${responseS.status}`);
+        }
+    }
+    updateMovieList();
+</script>
