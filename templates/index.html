@@ -23,14 +23,14 @@
         <script>
     async function enterMovie() {
         const movieInputField = document.getElementById("movie-input-field");
-        const movieContent = movieInputField.value.trim();
-        if (!movieContent) {
+        const movieName = movieInputField.value.trim();
+        if (!movieName) {
             console.error("Movie input is empty");
             return;
         }
 
         const contentToSend = {
-            "movie_content": movieContent
+            "movieName": movieName
         };
             const response = await fetch('/movie', {
                 method: 'POST',
@@ -65,8 +65,8 @@
                 movieList.innerHTML += `
                     <div class='list-group-item list-group-item-action py-3 lh-sm'>
                         <div class='d-flex w-100 align-items-center justify-content-between'>
-                            <strong class='mb-1'>${movie}</strong>
-                            <button class='btn btn-danger btn-sm' onclick='deleteMovie(${index})'>Delete</button>
+                            <strong class='mb-1'>${movie[1]}</strong>
+                            <button class='btn btn-danger btn-sm' onclick='deleteMovie(${movie[0]})'>Delete</button>
                         </div>
                     </div>`;
             });
